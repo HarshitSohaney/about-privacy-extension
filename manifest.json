@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "name": "AI Scraper Checker",
+  "version": "1.0",
+  "description": "Checks if AI scrapers are allowed or disallowed in robots.txt",
+  "permissions": [
+    "activeTab",
+    "http://*/",
+    "https://*/"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon48.png",
+      "96": "icon96.png"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "config.json"
+  ]
+}
