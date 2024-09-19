@@ -55,7 +55,8 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
               action: "displayResults",
               data: {
                 results: results,
-                robotsTxt: response.data
+                robotsTxt: response.data,
+                hostname: domain
               }
             });
           } else {

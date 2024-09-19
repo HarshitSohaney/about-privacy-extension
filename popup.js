@@ -95,6 +95,12 @@ function toggleWildcardRules(event) {
     : "Show Wildcard Rules ▼";
 }
 
+function addWellKnownSiteLink(domain){
+  const wellKnownLink = document.getElementById('wellKnownLink');
+  console.log(domain);
+  wellKnownLink.href = `https://well-known.dev/sites/${domain}`;
+}
+
 // Event listeners
 document.addEventListener("DOMContentLoaded", () => {
   browser.tabs
@@ -115,6 +121,8 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     resultsDiv.innerHTML = `<p>Error: ${request.data.error}</p>`;
     return;
   }
+
+  addWellKnownSiteLink(request.data.hostname);
 
   resultsDiv.innerHTML = `
     <div class="results-grid">
