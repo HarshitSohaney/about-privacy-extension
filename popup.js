@@ -1,42 +1,49 @@
+// Helper functions
+const createStatusElement = (status) => `<span class="status ${status.toLowerCase()}">${status}</span>`;
+
+const createRulesList = (rules, type) => {
+  if (rules.length === 0) return '';
+  return `
+    <h4>${type} rules:</h4>
+    <ul>
+      ${rules.map(rule => `<li>${rule.type}: ${rule.value}</li>`).join('')}
+    </ul>
+  `;
+};
+
+const createWildcardToggle = (wildcardRulesHtml) => `
+  <div class="wildcard-toggle">Show Wildcard Rules ▼</div>
+  <div class="wildcard-rules">
+    ${wildcardRulesHtml}
+  </div>
+`;
+
+// Main functions
 function displayBotResults(botName, result) {
-  let status;
-  if (result.completelyAllowed) {
-    status = `<span class="status allowed">Allowed</span>`;
-  } else if (result.completelyBlocked) {
-    status = `<span class="status blocked">Blocked</span>`;
-  } else if (result.partiallyBlocked) {
-    status = `<span class="status partially">Partially blocked</span>`;
-  } else {
-    status = `<span class="status allowed">Allowed</span>`;
-  }
+  const getStatus = () => {
+    if (result.completelyAllowed) return 'Allowed';
+    if (result.completelyBlocked) return 'Blocked';
+    if (result.partiallyBlocked) return 'Partially blocked';
+    return 'Allowed';
+  };
 
-  let specificRulesHtml = '';
-  if (result.specificRules.disallow.length > 0 || result.specificRules.allow.length > 0) {
-    specificRulesHtml += '<h4>Specific rules:</h4><ul>';
-    result.specificRules.allow.forEach(rule => specificRulesHtml += `<li>Allow: ${rule}</li>`);
-    result.specificRules.disallow.forEach(rule => specificRulesHtml += `<li>Disallow: ${rule}</li>`);
-    specificRulesHtml += '</ul>';
-  }
+  const status = createStatusElement(getStatus());
+  const specificRulesHtml = createRulesList([
+    ...result.specificRules.allow.map(rule => ({ type: 'Allow', value: rule })),
+    ...result.specificRules.disallow.map(rule => ({ type: 'Disallow', value: rule }))
+  ], 'Specific');
 
-  let wildcardRulesHtml = '';
-  if (result.wildcardRules.disallow.length > 0 || result.wildcardRules.allow.length > 0) {
-    wildcardRulesHtml += '<h4>Wildcard rules:</h4><ul>';
-    result.wildcardRules.allow.forEach(rule => wildcardRulesHtml += `<li>Allow: ${rule}</li>`);
-    result.wildcardRules.disallow.forEach(rule => wildcardRulesHtml += `<li>Disallow: ${rule}</li>`);
-    wildcardRulesHtml += '</ul>';
-  }
+  const wildcardRulesHtml = createRulesList([
+    ...result.wildcardRules.allow.map(rule => ({ type: 'Allow', value: rule })),
+    ...result.wildcardRules.disallow.map(rule => ({ type: 'Disallow', value: rule }))
+  ], 'Wildcard');
 
   return `
     <div class="result">
       <h3>${botName} scraper: ${status}</h3>
       <div class="rules">
         ${specificRulesHtml}
-        ${wildcardRulesHtml ? `
-          <div class="wildcard-toggle">Show Wildcard Rules ▼</div>
-          <div class="wildcard-rules">
-            ${wildcardRulesHtml}
-          </div>
-        ` : ''}
+        ${wildcardRulesHtml ? createWildcardToggle(wildcardRulesHtml) : ''}
       </div>
     </div>
   `;
@@ -48,29 +55,31 @@ function toggleWildcardRules(event) {
   event.target.textContent = isExpanded ? 'Hide Wildcard Rules ▲' : 'Show Wildcard Rules ▼';
 }
 
+// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    browser.tabs.sendMessage(tabs[0].id, { action: "checkRobotsTxt" });
-  });
+  browser.tabs.query({ active: true, currentWindow: true })
+    .then(tabs => browser.tabs.sendMessage(tabs[0].id, { action: "checkRobotsTxt" }))
+    .catch(error => console.error('Error querying tabs:', error));
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "displayResults") {
-    const resultsDiv = document.getElementById('results');
-    const robotsTxtPre = document.getElementById('robotsTxt');
+  if (request.action !== "displayResults") return;
 
-    if (request.data.error) {
-      resultsDiv.innerHTML = `<p>Error: ${request.data.error}</p>`;
-    } else {
-      resultsDiv.innerHTML = Object.entries(request.data.results)
-        .map(([botName, result]) => displayBotResults(botName, result))
-        .join('');
-      robotsTxtPre.textContent = request.data.robotsTxt;
+  const resultsDiv = document.getElementById('results');
+  const robotsTxtPre = document.getElementById('robotsTxt');
 
-      // Add event listeners to wildcard toggles
-      document.querySelectorAll('.wildcard-toggle').forEach(toggle => {
-        toggle.addEventListener('click', toggleWildcardRules);
-      });
-    }
+  if (request.data.error) {
+    resultsDiv.innerHTML = `<p>Error: ${request.data.error}</p>`;
+    return;
   }
+
+  resultsDiv.innerHTML = Object.entries(request.data.results)
+    .map(([botName, result]) => displayBotResults(botName, result))
+    .join('');
+
+  robotsTxtPre.textContent = request.data.robotsTxt;
+
+  document.querySelectorAll('.wildcard-toggle').forEach(toggle => {
+    toggle.addEventListener('click', toggleWildcardRules);
+  });
 });
