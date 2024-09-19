@@ -1,103 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Scraper Checker</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      width: 300px;
-      margin: 0;
-      padding: 10px;
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    h2 {
-      color: #2c3e50;
-      border-bottom: 2px solid #3498db;
-      padding-bottom: 5px;
-      margin-top: 0;
-      font-size: 18px;
-    }
-    .result {
-      background-color: white;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .result h3 {
-      margin-top: 0;
-      color: #2c3e50;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-    }
-    .result h3 img {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-    }
-    .status {
-      font-weight: bold;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-    .blocked { background-color: #2ecc71; color: white; }
-    .allowed { background-color: #e74c3c; color: white; }
-    .partially { background-color: #f39c12; color: white; }
-    .rules {
-      margin-top: 5px;
-      font-size: 12px;
-    }
-    .rules h4 {
-      margin-bottom: 3px;
-      color: #34495e;
-      font-size: 14px;
-    }
-    .rules ul {
-      list-style-type: none;
-      padding-left: 0;
-      margin: 0;
-    }
-    .rules li {
-      padding: 2px 0;
-    }
-    .wildcard-toggle {
-      cursor: pointer;
-      color: #3498db;
-      margin-top: 5px;
-      font-size: 12px;
-    }
-    .wildcard-rules {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-    .expanded {
-      max-height: 500px;
-      transition: max-height 0.5s ease-in;
-    }
-    #robotsTxt {
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 5px;
-      max-height: 100px;
-      overflow-y: auto;
-      font-family: monospace;
-      font-size: 10px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-  </style>
-</head>
-<body>
-  <div id="results"></div>
-  <h3>robots.txt content:</h3>
-  <pre id="robotsTxt"></pre>
-  <script src="popup.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Scraper Checker</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div id="results"></div>
+    <h3>robots.txt full content:</h3>
+    <pre id="robotsTxt"></pre>
+    <script src="popup.js"></script>
+  </body>
 </html>
