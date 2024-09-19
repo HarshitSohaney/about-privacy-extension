@@ -95,8 +95,8 @@ function toggleWildcardRules(event) {
     : "Show Wildcard Rules ▼";
 }
 
-function addWellKnownSiteLink(domain){
-  const wellKnownLink = document.getElementById('wellKnownLink');
+function addWellKnownSiteLink(domain) {
+  const wellKnownLink = document.getElementById("wellKnownLink");
   console.log(domain);
   wellKnownLink.href = `https://well-known.dev/sites/${domain}`;
 }
