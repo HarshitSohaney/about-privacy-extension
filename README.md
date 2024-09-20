@@ -1,5 +1,5 @@
 # about:privacy extension
-Firefox extension to see a website's intentions to protect a user's privacy. This is done by displaying the website's **robots.txt** file and if the site disallows common crawlers like gptbot, googlebot, etc. from scraping the site. Additionally, the extension also shows if a website respects GPC (global privacy control)[https://privacycg.github.io/gpc-spec/].
+Firefox extension to see a website's intentions to protect a user's privacy. This is done by displaying the website's **robots.txt** file and if the site disallows common crawlers like gptbot, googlebot, etc. from scraping the site. Additionally, the extension also shows if a website respects GPC ([global privacy control](https://privacycg.github.io/gpc-spec/)).
 
 ## Installation
 
