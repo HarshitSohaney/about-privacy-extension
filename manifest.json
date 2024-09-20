@@ -7,8 +7,8 @@
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "48": "icon48.png",
-      "96": "icon96.png"
+      "48": "assets/logo.png",
+      "96": "assets/logo.png"
     }
   },
   "background": {
