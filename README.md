@@ -14,6 +14,10 @@ Firefox extension to see a website's intentions to protect a user's privacy. Thi
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request.
 
+## Demo
+https://github.com/user-attachments/assets/57651c27-1b6e-49c2-8300-d16cfa8cd994
+
 ## License
 This project is licensed under the Mozilla Public License (MPL). See the LICENSE file for details.
+
 
