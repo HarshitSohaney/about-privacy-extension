@@ -102,10 +102,10 @@ function addWellKnownSiteLink(domain) {
 
 function updateGPCstatus(status) {
   const gpcStatus = document.getElementById("gpc-status");
-  if (status.gpc == true) {
-    gpcStatus.innerHTML = "<span>GPC Enabled 😊</span>";
-  } else if (status.gpc == false) {
-    gpcStatus.innerHTML = "<span>GPC Disabled 🤨</span>";
+  if (status && status.gpc == true) {
+    gpcStatus.innerHTML = "<span>GPC Respected 😊</span>";
+  } else if (status && status.gpc == false) {
+    gpcStatus.innerHTML = "<span>GPC Not Respected 🤨</span>";
   } else {
     gpcStatus.innerHTML = "<span>GPC Not Supported 😔</span>";
   }

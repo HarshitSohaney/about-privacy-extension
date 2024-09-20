@@ -1,16 +1,23 @@
 function fetchWellKnownResource(url) {
   return new Promise((resolve, reject) => {
     fetch(url)
-      .then((response) => response.text())
+      .then((response) => {
+        if (response.status === 404) {
+          resolve(null);
+        } else {
+          return response.text();
+        }
+      })
       .then((data) => {
-        resolve(data);
+        if (data !== null) {
+          resolve(data);
+        }
       })
       .catch((error) => {
         reject(error);
       });
   });
 }
-
 browser.browserAction.onClicked.addListener((tab) => {
   browser.tabs.sendMessage(tab.id, { action: "checkRobotsTxt" });
 });

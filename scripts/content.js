@@ -62,6 +62,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const domain = window.location.hostname;
     const protocol = window.location.protocol;
 
+    console.log("Fetching robots.txt for domain:", domain);
     // Construct the robots.txt URL
     const robotsTxtUrl = `${protocol}//${domain}/robots.txt`;
     const gpcjsonUrl = `${protocol}//${domain}/.well-known/gpc.json`;
@@ -81,7 +82,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }),
         ]).then(([robotsTxtResponse, gpcjsonResponse]) => {
           // If robots.txt was successfully fetched, parse and send results
-          if (robotsTxtResponse.success && gpcjsonResponse.success) {
+          if (robotsTxtResponse.success) {
             const results = {};
             // Parse robots.txt for each bot user agent defined in the config
             config.bots.forEach((bot) => {
@@ -97,7 +98,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 results: results,
                 robotsTxt: robotsTxtResponse.data,
                 hostname: domain,
-                respects_gpc: JSON.parse(gpcjsonResponse.data),
+                respects_gpc: gpcjsonResponse ? JSON.parse(gpcjsonResponse.data) : "Not Suppported",
               },
             });
           } else {
