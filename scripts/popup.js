@@ -136,6 +136,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   updateGPCstatus(request.data.respects_gpc);
 
+  const domainHeader = document.getElementById("domain-header");
+  domainHeader.textContent = "about " + request.data.hostname;
+
   resultsDiv.innerHTML = `
     <div class="results-grid">
       ${Object.entries(request.data.results)
