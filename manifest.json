@@ -3,11 +3,7 @@
   "name": "AI Scraper Checker",
   "version": "1.0",
   "description": "Checks if AI scrapers are allowed or disallowed in robots.txt",
-  "permissions": [
-    "activeTab",
-    "http://*/",
-    "https://*/"
-  ],
+  "permissions": ["activeTab", "http://*/", "https://*/", "privacy"],
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -26,6 +22,7 @@
     }
   ],
   "web_accessible_resources": [
+    "scripts/gpc-checker.js",
     "config.json"
   ]
 }

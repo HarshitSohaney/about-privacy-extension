@@ -45,6 +45,25 @@ function parseRobotsTxt(robotsTxt, userAgent) {
   };
 }
 
+// Function to inject a script to check for GPC in the website context
+function checkGPCStatus() {
+  return new Promise((resolve) => {
+    // Create a <script> tag that points to the external script
+    const script = document.createElement("script");
+    script.src = browser.runtime.getURL("scripts/gpc-checker.js"); // Path to the external script
+    (document.head || document.documentElement).appendChild(script);
+
+    // Listen for the GPC status response
+    window.addEventListener("message", (event) => {
+      if (event.source !== window || event.data.gpcStatus === undefined) return;
+      resolve(event.data.gpcStatus);
+    });
+
+    // Clean up the script after it executes
+    script.onload = () => script.remove();
+  });
+}
+
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "checkRobotsTxt") {
     const domain = window.location.hostname;
@@ -54,38 +73,40 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     fetch(browser.runtime.getURL("config.json"))
       .then((response) => response.json())
       .then((config) => {
-        browser.runtime
-          .sendMessage({
+        Promise.all([
+          browser.runtime.sendMessage({
             action: "fetchRobotsTxt",
             url: robotsTxtUrl,
-          })
-          .then((response) => {
-            if (response.success) {
-              const results = {};
-              config.bots.forEach((bot) => {
-                results[bot.name] = parseRobotsTxt(
-                  response.data,
-                  bot.userAgent
-                );
-              });
+          }),
+          checkGPCStatus(),
+        ]).then(([robotsTxtResponse, gpcStatus]) => {
+          if (robotsTxtResponse.success) {
+            const results = {};
+            config.bots.forEach((bot) => {
+              results[bot.name] = parseRobotsTxt(
+                robotsTxtResponse.data,
+                bot.userAgent
+              );
+            });
 
-              browser.runtime.sendMessage({
-                action: "displayResults",
-                data: {
-                  results: results,
-                  robotsTxt: response.data,
-                  hostname: domain,
-                },
-              });
-            } else {
-              browser.runtime.sendMessage({
-                action: "displayResults",
-                data: {
-                  error: "Failed to fetch robots.txt",
-                },
-              });
-            }
-          });
+            browser.runtime.sendMessage({
+              action: "displayResults",
+              data: {
+                results: results,
+                robotsTxt: robotsTxtResponse.data,
+                hostname: domain,
+                respects_gpc: gpcStatus,
+              },
+            });
+          } else {
+            browser.runtime.sendMessage({
+              action: "displayResults",
+              data: {
+                error: "Failed to fetch robots.txt",
+              },
+            });
+          }
+        });
       });
   }
 });

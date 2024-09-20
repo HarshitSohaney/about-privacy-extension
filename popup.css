@@ -170,3 +170,13 @@ h2 {
 .well-known-link:hover {
   text-decoration: underline;
 }
+
+#gpc-status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+}

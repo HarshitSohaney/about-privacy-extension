@@ -101,6 +101,15 @@ function addWellKnownSiteLink(domain) {
   wellKnownLink.href = `https://well-known.dev/sites/${domain}`;
 }
 
+function updateGPCstatus(status) {
+  const gpcStatus = document.getElementById("gpc-status");
+  if (status) {
+    gpcStatus.innerHTML = "<span>GPC Enabled 😊</span>";
+  } else {
+    gpcStatus.innerHTML = "<span>GPC Disabled 🤨</span>";
+  }
+}
+
 // Event listeners
 document.addEventListener("DOMContentLoaded", () => {
   browser.tabs
@@ -123,6 +132,8 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   addWellKnownSiteLink(request.data.hostname);
+  console.log(request.data.respects_gpc);
+  updateGPCstatus(request.data.respects_gpc);
 
   resultsDiv.innerHTML = `
     <div class="results-grid">
