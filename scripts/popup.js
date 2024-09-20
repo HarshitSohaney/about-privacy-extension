@@ -103,10 +103,12 @@ function addWellKnownSiteLink(domain) {
 
 function updateGPCstatus(status) {
   const gpcStatus = document.getElementById("gpc-status");
-  if (status) {
+  if (status == true) {
     gpcStatus.innerHTML = "<span>GPC Enabled 😊</span>";
-  } else {
+  } else if (status == false) {
     gpcStatus.innerHTML = "<span>GPC Disabled 🤨</span>";
+  } else {
+    gpcStatus.innerHTML = "<span>GPC Not Supported 😔</span>";
   }
 }
 
@@ -132,7 +134,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   addWellKnownSiteLink(request.data.hostname);
-  console.log(request.data.respects_gpc);
+
   updateGPCstatus(request.data.respects_gpc);
 
   resultsDiv.innerHTML = `
