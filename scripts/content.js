@@ -55,26 +55,6 @@ function parseRobotsTxt(robotsTxt, userAgent) {
   };
 }
 
-// Function to inject a script that checks if the website respects Global Privacy Control (GPC)
-function checkGPCStatus() {
-  return new Promise((resolve) => {
-    // Create a <script> element that loads the external GPC checker script
-    const script = document.createElement("script");
-    script.src = browser.runtime.getURL("scripts/gpc-checker.js");
-    (document.head || document.documentElement).appendChild(script);
-
-    // Listen for a message event to receive the GPC status
-    window.addEventListener("message", (event) => {
-      // Ensure the message comes from the same window and has GPC status data
-      if (event.source !== window || event.data.gpcStatus === undefined) return;
-      resolve(event.data.gpcStatus); // Resolve the promise with the GPC status
-    });
-
-    // Clean up the script element after it has loaded
-    script.onload = () => script.remove();
-  });
-}
-
 // Listener for messages sent to the background script
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Handle "checkRobotsTxt" action
@@ -84,6 +64,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     // Construct the robots.txt URL
     const robotsTxtUrl = `${protocol}//${domain}/robots.txt`;
+    const gpcjsonUrl = `${protocol}//${domain}/.well-known/gpc.json`;
 
     // Fetch bot configuration from the local config.json file
     fetch(browser.runtime.getURL("config.json"))
@@ -91,13 +72,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then((config) => {
         Promise.all([
           browser.runtime.sendMessage({
-            action: "fetchRobotsTxt",
+            action: "fetchWellKnownResource",
             url: robotsTxtUrl,
           }),
-          checkGPCStatus(),
-        ]).then(([robotsTxtResponse, gpcStatus]) => {
+          browser.runtime.sendMessage({
+            action: "fetchWellKnownResource",
+            url: gpcjsonUrl,
+          }),
+        ]).then(([robotsTxtResponse, gpcjsonResponse]) => {
           // If robots.txt was successfully fetched, parse and send results
-          if (robotsTxtResponse.success) {
+          if (robotsTxtResponse.success && gpcjsonResponse.success) {
             const results = {};
             // Parse robots.txt for each bot user agent defined in the config
             config.bots.forEach((bot) => {
@@ -106,7 +90,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 bot.userAgent
               );
             });
-
             // Send results, including GPC status, back to the background script
             browser.runtime.sendMessage({
               action: "displayResults",
@@ -114,7 +97,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 results: results,
                 robotsTxt: robotsTxtResponse.data,
                 hostname: domain,
-                respects_gpc: gpcStatus,
+                respects_gpc: JSON.parse(gpcjsonResponse.data),
               },
             });
           } else {

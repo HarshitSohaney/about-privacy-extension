@@ -97,15 +97,14 @@ function toggleWildcardRules(event) {
 
 function addWellKnownSiteLink(domain) {
   const wellKnownLink = document.getElementById("wellKnownLink");
-  console.log(domain);
   wellKnownLink.href = `https://well-known.dev/sites/${domain}`;
 }
 
 function updateGPCstatus(status) {
   const gpcStatus = document.getElementById("gpc-status");
-  if (status == true) {
+  if (status.gpc == true) {
     gpcStatus.innerHTML = "<span>GPC Enabled 😊</span>";
-  } else if (status == false) {
+  } else if (status.gpc == false) {
     gpcStatus.innerHTML = "<span>GPC Disabled 🤨</span>";
   } else {
     gpcStatus.innerHTML = "<span>GPC Not Supported 😔</span>";

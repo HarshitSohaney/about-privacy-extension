@@ -1,4 +1,4 @@
-function fetchRobotsTxt(url) {
+function fetchWellKnownResource(url) {
   return new Promise((resolve, reject) => {
     fetch(url)
       .then((response) => response.text())
@@ -16,8 +16,8 @@ browser.browserAction.onClicked.addListener((tab) => {
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "fetchRobotsTxt") {
-    fetchRobotsTxt(request.url)
+  if (request.action === "fetchWellKnownResource") {
+    fetchWellKnownResource(request.url)
       .then((data) => {
         sendResponse({ success: true, data: data });
       })
