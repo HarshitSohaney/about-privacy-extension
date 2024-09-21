@@ -55,6 +55,19 @@ function parseRobotsTxt(robotsTxt, userAgent) {
   };
 }
 
+function validateGPCResponse(gpcResponse) {
+  // Make sure the gpc response is a json
+  if (gpcResponse && gpcResponse.data) {
+    try {
+      return JSON.parse(gpcResponse.data);
+    } catch (error) {
+      return "Not Supported";
+    }
+  } else {
+    return"Not Supported";
+  }
+}
+
 // Listener for messages sent to the background script
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Handle "checkRobotsTxt" action
@@ -62,7 +75,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const domain = window.location.hostname;
     const protocol = window.location.protocol;
 
-    console.log("Fetching robots.txt for domain:", domain);
     // Construct the robots.txt URL
     const robotsTxtUrl = `${protocol}//${domain}/robots.txt`;
     const gpcjsonUrl = `${protocol}//${domain}/.well-known/gpc.json`;
@@ -82,7 +94,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }),
         ]).then(([robotsTxtResponse, gpcjsonResponse]) => {
           // If robots.txt was successfully fetched, parse and send results
-          if (robotsTxtResponse.success) {
+          if (robotsTxtResponse.success && robotsTxtResponse.data) {
             const results = {};
             // Parse robots.txt for each bot user agent defined in the config
             config.bots.forEach((bot) => {
@@ -91,6 +103,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 bot.userAgent
               );
             });
+
             // Send results, including GPC status, back to the background script
             browser.runtime.sendMessage({
               action: "displayResults",
@@ -98,7 +111,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 results: results,
                 robotsTxt: robotsTxtResponse.data,
                 hostname: domain,
-                respects_gpc: gpcjsonResponse ? JSON.parse(gpcjsonResponse.data) : "Not Suppported",
+                respects_gpc: validateGPCResponse(gpcjsonResponse),
               },
             });
           } else {

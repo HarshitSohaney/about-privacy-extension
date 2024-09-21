@@ -128,7 +128,17 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const robotsTxtPre = document.getElementById("robotsTxt");
 
   if (request.data.error) {
-    resultsDiv.innerHTML = `<p>Error: ${request.data.error}</p>`;
+    resultsDiv.innerHTML = `
+      <p align="center">
+        <img src="/assets/logo.png" alt="Error" width="100" height="100">
+        <p>Error: ${request.data.error}</p>
+      </p>
+    `;
+    // remove all other elements
+    const elementsToRemove = document.querySelectorAll(
+      "#domain-header, #robotsTxt, #wellKnownLink, #gpc-status, h3"
+    );
+    elementsToRemove.forEach((element) => element.remove());
     return;
   }
 
