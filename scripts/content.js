@@ -1,12 +1,14 @@
 // Function to parse the robots.txt file and extract rules for a specific user agent
-function parseRobotsTxt(robotsTxt, userAgent) {
+function parseRobotsTxt(robotsTxt, userAgents) {
   const lines = robotsTxt.split("\n");
   let currentUserAgent = "";
   let rules = {
     "*": { disallow: [], allow: [] },
-    [userAgent]: { disallow: [], allow: [] },
   };
 
+  userAgents.forEach((agent) => {
+    rules[agent] = { disallow: [], allow: [] };
+  });
   // Loop through each line in the robots.txt file
   for (let line of lines) {
     line = line.trim().toLowerCase();
@@ -18,7 +20,7 @@ function parseRobotsTxt(robotsTxt, userAgent) {
     // Add disallow rules if the current userAgent matches or is a wildcard
     else if (
       line.startsWith("disallow:") &&
-      (currentUserAgent === "*" || currentUserAgent === userAgent)
+      (currentUserAgent === "*" || userAgents.includes(currentUserAgent))
     ) {
       const path = line.split(":")[1].trim();
       rules[currentUserAgent].disallow.push(path);
@@ -26,7 +28,7 @@ function parseRobotsTxt(robotsTxt, userAgent) {
     // Add allow rules if the current userAgent matches or is a wildcard
     else if (
       line.startsWith("allow:") &&
-      (currentUserAgent === "*" || currentUserAgent === userAgent)
+      (currentUserAgent === "*" || userAgents.includes(currentUserAgent))
     ) {
       const path = line.split(":")[1].trim();
       rules[currentUserAgent].allow.push(path);
@@ -35,22 +37,27 @@ function parseRobotsTxt(robotsTxt, userAgent) {
 
   // Check if access is completely allowed, blocked, or partially blocked
   const completelyAllowed =
-    rules[userAgent].allow.includes("/") || rules["*"].allow.includes("/");
+    rules["*"].allow.includes("/") ||
+    userAgents.some((agent) => rules[agent].allow.includes("/"));
   const completelyBlocked =
     !completelyAllowed &&
-    (rules[userAgent].disallow.includes("/") ||
+    (userAgents.some((agent) => rules[agent].disallow.includes("/")) ||
       rules["*"].disallow.includes("/"));
   const partiallyBlocked =
     !completelyAllowed &&
     !completelyBlocked &&
-    (rules[userAgent].disallow.length > 0 || rules["*"].disallow.length > 0);
+    (userAgents.some((agent) => rules[agent].disallow.length > 0) ||
+      rules["*"].disallow.length > 0);
 
   // Return an object with parsed results
   return {
     completelyAllowed,
     completelyBlocked,
     partiallyBlocked,
-    specificRules: rules[userAgent],
+    specificRules: {
+      allow: userAgents.flatMap(agent => rules[agent].allow),
+      disallow: userAgents.flatMap(agent => rules[agent].disallow)
+    },
     wildcardRules: rules["*"],
   };
 }
@@ -64,7 +71,7 @@ function validateGPCResponse(gpcResponse) {
       return "Not Supported";
     }
   } else {
-    return"Not Supported";
+    return "Not Supported";
   }
 }
 

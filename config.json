@@ -1,8 +1,8 @@
 {
   "bots": [
-    { "name": "ChatGPT", "userAgent": "gptbot" },
-    { "name": "Anthropic", "userAgent": "claudebot" },
-    { "name": "Google", "userAgent": "googlebot" },
-    { "name": "ByteDance", "userAgent": "bytespider" }
+    { "name": "ChatGPT", "userAgent": ["gptbot"] },
+    { "name": "Anthropic", "userAgent": ["claudebot", "anthropic-ai"] },
+    { "name": "Google", "userAgent": ["googlebot"] },
+    { "name": "ByteDance", "userAgent": ["bytespider"] }
   ]
 }
