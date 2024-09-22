@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "about:privacy",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Checks if AI scrapers are allowed or disallowed in robots.txt",
   "permissions": ["activeTab", "http://*/", "https://*/", "privacy"],
   "browser_action": {
