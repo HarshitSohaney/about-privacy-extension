@@ -125,21 +125,21 @@ h2 {
 }
 
 /* Wildcard rules */
-.wildcard-toggle {
+.card-toggle {
   cursor: pointer;
   color: #007bff;
   margin-top: 10px;
   font-size: 12px;
 }
 
-.wildcard-rules {
+.card-rules {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
   display: none;
 }
 
-.wildcard-rules.expanded {
+.card-rules.expanded {
   max-height: 500px;
   transition: max-height 0.5s ease-in;
   display: block;

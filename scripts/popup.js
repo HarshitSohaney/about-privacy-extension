@@ -13,12 +13,15 @@ const createRulesList = (rules, type) => {
   `;
 };
 
-const createWildcardToggle = (wildcardRulesHtml) => `
-  <div class="wildcard-toggle">Show Wildcard Rules ▼</div>
-  <div class="wildcard-rules">
-    ${wildcardRulesHtml}
-  </div>
-`;
+function createToggle(rulesHtml, type, botName) {
+  const botId = botName.toLowerCase().replace(/\s+/g, '-');
+  return `
+    <div class="card-toggle" id="${botId}-${type.toLowerCase()}-toggle">Show ${type} Rules ▼</div>
+    <div class="card-rules" id="${botId}-${type.toLowerCase()}-rules">
+      ${rulesHtml}
+    </div>
+  `;
+}
 
 const getBotImagePath = (botName) => {
   return `/assets/${botName.toLowerCase().replace(" ", "-")}.png`;
@@ -76,8 +79,8 @@ function displayBotResults(botName, result) {
       ${
         status_string == "Partial"
           ? `<div class="rules">
-      ${specificRulesHtml}
-      ${wildcardRulesHtml ? createWildcardToggle(wildcardRulesHtml) : ""}
+      ${specificRulesHtml ? createToggle(specificRulesHtml, "Specific", botName) : ""}
+      ${wildcardRulesHtml ? createToggle(wildcardRulesHtml, "Wildcard", botName) : ""}
     </div>`
           : ""
       }
@@ -85,14 +88,15 @@ function displayBotResults(botName, result) {
   `;
 }
 
-function toggleWildcardRules(event) {
-  const wildcardRules = event.target
-    .closest(".result-card")
-    .querySelector(".wildcard-rules");
-  const isExpanded = wildcardRules.classList.toggle("expanded");
-  event.target.textContent = isExpanded
-    ? "Hide Wildcard Rules ▲"
-    : "Show Wildcard Rules ▼";
+function toggleCardRules(event) {
+  const toggle = event.target;
+  const [botId, ruleType] = toggle.id.split('-');
+  const rulesElement = document.getElementById(`${botId}-${ruleType}-rules`);
+  
+  const isExpanded = rulesElement.classList.toggle("expanded");
+  toggle.textContent = isExpanded
+    ? `Hide ${ruleType.charAt(0).toUpperCase() + ruleType.slice(1)} Rules ▲`
+    : `Show ${ruleType.charAt(0).toUpperCase() + ruleType.slice(1)} Rules ▼`;
 }
 
 function addWellKnownSiteLink(domain) {
@@ -159,7 +163,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   robotsTxtPre.textContent = request.data.robotsTxt;
 
-  document.querySelectorAll(".wildcard-toggle").forEach((toggle) => {
-    toggle.addEventListener("click", toggleWildcardRules);
+  document.querySelectorAll(".card-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", toggleCardRules);
   });
 });
